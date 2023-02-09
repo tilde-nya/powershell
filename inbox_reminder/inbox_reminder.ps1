@@ -5,10 +5,11 @@ $recipient = $env.recipient # Address to send reminder to
 while (1) {
     [datetime]$run_time = $env.run_time # Time to run
     [datetime]$current_time = Get-Date
-    $wait_time = ($run_time - $current_time).TotalSeconds # Time until run time
+    $wait_time = ($run_time - $current_time).TotalSeconds + 5 # Time until run time
     if ($wait_time -lt 0) {
         $wait_time += 86400 # If run time is in the past, add 1 day
     }
+    Write-Output "Waiting for $($wait_time/60) minutes"
     Start-Sleep $wait_time # Wait for amount of time until run
 
     # Code:
@@ -29,15 +30,15 @@ while (1) {
         $msg = $outlook.CreateItem(0)
         $msg.To = $recipient
         if ($emails.Count -eq 0) {
-            $msg.Subject = "Reminder: $i is all caught up :D"
+            $msg.Subject = "$i is all caught up!"
         } else {
-            $msg.Subject = "Reminder: $($emails.Count) unresponded email(s) in $i" 
+            $msg.Subject = "$i - $($emails.Count) unresponded email(s)" 
         }
         $msg.Body = ""
         foreach ($e in $emails) {
             $msg.Body += "From $($e.SenderName) ($($e.SenderEmailAddress)) - Subject: $($e.Subject)`rSent at $($e.ReceivedTime.ToString())`rAssigned Category: $($e.Categories)`n`n"
         }
-        $msg.Body += "This message was sent by the robot. beepo"
+        $msg.Body += "This message was sent by a robot. beep"
 
         $msg.Send()
         Write-Output "Sent reminder to $recipient for $i"
