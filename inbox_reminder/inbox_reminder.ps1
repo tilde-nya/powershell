@@ -1,9 +1,9 @@
 $env = Get-Content .\env.json | ConvertFrom-Json
 $identities = $env.identities # Shared mailboxes to scan
 $recipient = $env.recipient # Address to send reminder to
-[datetime]$run_time = $env.run_time # Time to run
 
 while (1) {
+    [datetime]$run_time = $env.run_time # Time to run
     [datetime]$current_time = Get-Date
     $wait_time = ($run_time - $current_time).TotalSeconds # Time until run time
     if ($wait_time -lt 0) {
